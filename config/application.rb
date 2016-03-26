@@ -11,6 +11,13 @@ module Raceday
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
+        # bootstraps mongoid within applications -- like rails console
+    Mongoid.load!('./config/mongoid.yml')
+
+    # which default ORM are we using with scaffold
+    # add --orm none, mongoid, or active_record
+    # to rails generate cmd line to be specific
+    config.generators {|g| g.orm :active_record}
 
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
