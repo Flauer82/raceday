@@ -4,7 +4,8 @@ class RacersController < ApplicationController
   # GET /racers
   # GET /racers.json
   def index
-    @racers = Racer.all
+    #@racers = Racer.all
+    @racers = Racer.paginate(page:params[:page], per_page:params[:per_page])
   end
 
   # GET /racers/1

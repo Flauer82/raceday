@@ -16,7 +16,7 @@
   </thead>
 
   <tbody>
-    <% @racers.each do |racer| %>
+    <% @racers.each do |racer| racer=toRacer(racer) %>
       <tr>
         <td><%= racer.number %></td>
         <td><%= racer.first_name %></td>
@@ -26,12 +26,12 @@
         <td><%= racer.secs %></td>
         <td><%= link_to 'Show', racer %></td>
         <td><%= link_to 'Edit', edit_racer_path(racer) %></td>
-        <td><%= link_to 'Destroy', racer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Destroy', racer, method: :delete %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
-
+<%= will_paginate @racers %>
 <br>
 
 <%= link_to 'New Racer', new_racer_path %>
