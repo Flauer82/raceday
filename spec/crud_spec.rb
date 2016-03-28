@@ -5,11 +5,11 @@ require 'utils'
 Mongo::Logger.logger.level = ::Logger::INFO
 
 
-feature "Module 1 Summative - CRUD Model Tests" do 
+feature "Module 1 Summative - CRUD Model Tests" do
 
     !let(:data_file) { "race_results.json" }
 
-    before :each do 
+    before :each do
         @db = Racer.mongo_client
         @db[:racers].drop
         hash = JSON.parse(File.read(data_file))
@@ -18,16 +18,16 @@ feature "Module 1 Summative - CRUD Model Tests" do
     end
 
     context "rq01" do
-        it "Racer implements a class method called all" do 
+        it "Racer implements a class method called all" do
             expect(Racer).to respond_to(:all)
         end
 
-        it "class method all takes 4 optional parameters and no required parameters" do 
+        it "class method all takes 4 optional parameters and no required parameters" do
             expect((Racer.method(:all).parameters.flatten - [:opt]).count).to eq 4
             expect(Racer.method(:all).parameters.flatten).to_not include (:req)
         end
 
-        it "class method all default parameters return all records sorted by number ascending" do 
+        it "class method all default parameters return all records sorted by number ascending" do
             results = Racer.all
             expect(results.count).to eq(@num_records)
             num = -1
@@ -37,7 +37,7 @@ feature "Module 1 Summative - CRUD Model Tests" do
             end
         end
 
-        it "class method all returns filtered records according to user parameters" do 
+        it "class method all returns filtered records according to user parameters" do
             result = Racer.all.to_a
             filter_count = 0
             result.each do |ar|
@@ -64,8 +64,8 @@ feature "Module 1 Summative - CRUD Model Tests" do
         end
     end
 
-    context "rq02" do 
-        it "Racer has accessors for id, number, first_name, last_name, gender, group and secs" do  
+    context "rq02" do
+        it "Racer has accessors for id, number, first_name, last_name, gender, group and secs" do
             racer = Racer.new
             expect(racer).to respond_to(:id)
             expect(racer).to respond_to(:number)
@@ -77,8 +77,8 @@ feature "Module 1 Summative - CRUD Model Tests" do
         end
     end
 
-    context "rq03" do  
-        it "Racer has an initializer of the class using racers document keys" do 
+    context "rq03" do
+        it "Racer has an initializer of the class using racers document keys" do
             dbRacer = Racer.all.find.first
             racer_obj = Racer.new(dbRacer)
             expect(racer_obj.id).to_not be_nil
@@ -86,29 +86,29 @@ feature "Module 1 Summative - CRUD Model Tests" do
             expect(racer_obj.number).to_not be_nil
             expect(racer_obj.number).to eq(dbRacer[:number])
             expect(racer_obj.first_name).to_not be_nil
-            expect(racer_obj.first_name).to eq(dbRacer[:first_name])            
+            expect(racer_obj.first_name).to eq(dbRacer[:first_name])
             expect(racer_obj.last_name).to_not be_nil
             expect(racer_obj.last_name).to eq(dbRacer[:last_name])
             expect(racer_obj.gender).to_not be_nil
             expect(racer_obj.gender).to eq(dbRacer[:gender])
             expect(racer_obj.group).to_not be_nil
-            expect(racer_obj.group).to eq(dbRacer[:group])            
+            expect(racer_obj.group).to eq(dbRacer[:group])
             expect(racer_obj.secs).to_not be_nil
-            expect(racer_obj.secs).to eq(dbRacer[:secs])            
+            expect(racer_obj.secs).to eq(dbRacer[:secs])
         end
     end
 
-    context "rq04" do 
-        it "Racer implements a class method called find" do 
+    context "rq04" do
+        it "Racer implements a class method called find" do
             expect(Racer).to respond_to(:find)
         end
 
-        it "class method find takes a single id parameter" do 
+        it "class method find takes a single id parameter" do
             expect((Racer.method(:find).parameters.flatten - [:opt, :req]).count).to eq 1
             expect(Racer.method(:find).parameters.flatten).to_not include (:opt)
         end
 
-        it "find method accepts either a BSON::ObjectId or String" do 
+        it "find method accepts either a BSON::ObjectId or String" do
             data_record = Racer.collection.find(number: 300).first
             idval = data_record[:_id]
             expect(acc_record = Racer.find(idval)).to_not be_nil
@@ -117,7 +117,7 @@ feature "Module 1 Summative - CRUD Model Tests" do
             expect(acc_record2).to be_a(Racer)
         end
 
-        it "find method returns racer document represented by specified id" do 
+        it "find method returns racer document represented by specified id" do
             data_record = Racer.collection.find(number: 300).first
             idval = data_record[:_id]
             acc_record = Racer.find(idval)
@@ -134,14 +134,14 @@ feature "Module 1 Summative - CRUD Model Tests" do
         end
     end
 
-    context "rq05" do 
+    context "rq05" do
         let (:racer) { Racer.new({ number: 2000, first_name: "Bill", last_name: "Gates", gender: "M", group: "50 to 59", secs: 5000 }) }
 
-        it "Racer implements an instance method called save" do 
+        it "Racer implements an instance method called save" do
             expect(racer).to respond_to(:save)
         end
 
-        it "Method save takes no parameters" do 
+        it "Method save takes no parameters" do
             expect(racer.method(:save).parameters.flatten.count).to eq 0
         end
 
@@ -155,28 +155,29 @@ feature "Module 1 Summative - CRUD Model Tests" do
             expect(racer.gender).to eq db_result[:gender]
             expect(racer.group).to eq db_result[:group]
             expect(racer.secs).to eq db_result[:secs]
-        end 
+        end
     end
 
-    context "rq06" do 
+    context "rq06" do
         before :each do
             db_rec = Racer.collection.find(number: 300).first
             @id = db_rec[:_id].to_s
             @racer = Racer.find(@id)
         end
 
-        it "Racer implements an instance method called update" do 
+        it "Racer implements an instance method called update" do
             expect(@racer).to respond_to(:update)
         end
 
-        it "Method update takes a single hash as a parameters" do 
+        it "Method update takes a single hash as a parameters" do
             expect((@racer.method(:update).parameters.flatten - [:opt, :req]).count).to eq 1
             expect(@racer.method(:update).parameters.flatten).to_not include(:opt)
         end
 
-        it "update method updates object with supplied hash and overwrites other parameters" do 
+        it "update method updates object with supplied hash and overwrites other parameters" do
             old_racer = @racer
             # first test racer for validity
+            #byebug
             @racer.update(first_name:"thing", last_name:"one", group:"15 to 19", number: old_racer.number, secs: old_racer.secs)
             expect(@racer.first_name).to eq "thing"
             expect(@racer.last_name).to eq "one"
@@ -197,27 +198,27 @@ feature "Module 1 Summative - CRUD Model Tests" do
         end
     end
 
-    context "rq07" do 
+    context "rq07" do
         before :each do
             db_rec = Racer.collection.find(number: 350).first
             @id = db_rec[:_id].to_s
             @racer = Racer.find(@id)
         end
 
-        it "Racer implements an instance method called destroy" do 
+        it "Racer implements an instance method called destroy" do
             expect(@racer).to respond_to(:destroy)
         end
 
-        it "Method destroy takes no parameters" do 
+        it "Method destroy takes no parameters" do
             expect((@racer.method(:destroy).parameters.flatten).count).to eq 0
-        end        
+        end
 
-        it "destroy method deletes a document from the database" do 
+        it "destroy method deletes a document from the database" do
             expect(@racer).to_not be_nil
             expect(@racer.first_name).to_not be_nil
             @racer.destroy
             next_racer = Racer.find(@id)
-            expect(next_racer).to be_nil           
+            expect(next_racer).to be_nil
         end
     end
 end
